@@ -1,0 +1,28 @@
+{
+	"folders": [
+		{
+			"path": "../code"
+		},
+		{
+			"path": "../../../../../xampp/htdocs/website"
+		},
+		{
+			"path": "../HTML"
+		},
+		{
+			"path": "../Personal"
+		},
+		{
+			"path": "../voyage-master"
+		},
+		{
+			"path": "../java1"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "website"
+	}
+}
