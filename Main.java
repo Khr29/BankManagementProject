@@ -85,7 +85,7 @@ public class Main {
         System.out.println("\nAll Account: ");
         manager.displayAllAccounts();
 
-        DataHandler.saveAccounts(manager.getAllAccounts());
+        DataHandler.saveAccount(manager.getAllAccounts());
         input.close();
     }
 

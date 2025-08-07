@@ -1,0 +1,5 @@
+1001,Alice,alice123,1500.0
+1002,Bob,bobpass,2300.5
+1003,Charlie,charlie7,750.25
+1004,Diana,diana321,9800.0
+1005,Edward,edpass45,120.75
