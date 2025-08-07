@@ -16,5 +16,13 @@ public class DataHandler {
             System.out.println("Error saving accounts: "+ e.getMessage());
         }
     }
+
+    public static ArrayList<Account>loadAccounts(){
+        ArrayList<Account> accounts = new ArrayList<>();
+        File file = new File(FILE_NAME);
+        if(!file.exists());
+        return accounts;
+    }
     
+
 }
