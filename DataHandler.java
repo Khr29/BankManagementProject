@@ -1,9 +1,12 @@
 import java.io.*;
 import java.util.ArrayList;
 
+// Handles saving and loading accounts from a file
 public class DataHandler {
+
     private static final String FILE_NAME = "C:\\xampp\\htdocs\\javafiles\\accounts.txt";
 
+    // save all accounts to the file
     public static void saveAccounts(ArrayList<Account> accounts) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME))) {
             for (Account account : accounts) {
@@ -15,6 +18,7 @@ public class DataHandler {
         }
     }
 
+    // read accounts from the file
     public static ArrayList<Account> loadAccounts() {
         ArrayList<Account> accounts = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
