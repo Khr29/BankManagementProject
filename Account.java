@@ -12,14 +12,28 @@ public class Account {
     }
 
     // read details
-    public String getName() { return name; }
-    public int getAccountNumber() { return accountNumber; }
-    public double getBalance() { return balance; }
+    public String getName() {
+        return name;
+    }
+
+    public int getAccountNumber() {
+        return accountNumber;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
 
     // add or take money
-    public void deposit(double amount) { balance += amount; }
+    public void deposit(double amount) {
+        balance += amount;
+    }
+
     public boolean withdraw(double amount) {
-        if (amount <= balance) { balance -= amount; return true; }
+        if (amount <= balance) {
+            balance -= amount;
+            return true;
+        }
         return false;
     }
 
