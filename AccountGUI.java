@@ -24,7 +24,28 @@ public class AccountGUI extends JFrame {
 
         JPanel buttJPanel = new JPanel();
         buttJPanel.add(addButton);
-        buttJPanel.save(saveButton);
+        buttJPanel.add(saveButton);
+        buttJPanel.add(showButton);
+        add(buttJPanel, BorderLayout.SOUTH);
+
+        addButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                String name = JOptionPane.showInputDialog("Enter name:");
+                String accNumStr = JOptionPane.showInputDialog("Enter account number:");
+                String balanceStr = JOptionPane.showInputDialog("Enter balance:");
+                if(name != null && accNumStr != null && balanceStr != null){
+                    try {
+                        int accountNumber = Integer.parseInt(accNumStr);
+                        double balance = Double.parseDouble(balanceStr);
+                        Account acc = new Account(name, accountNumber, balance);
+                        manager.addAccount(acc);
+                        JOptionPane.showMessageDialog(null,"Account added!");
+                    } catch(NumberFormatException ex){
+                        JOptionPane.showMessageDialog(null,"Invalid number format!");
+                    }
+                }
+            }
+        });
 
 
     }
