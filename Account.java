@@ -1,46 +1,40 @@
 public class Account {
-    private int accountNumber;
     private String name;
+    private int accountNumber;
     private double balance;
-    private String password;
 
-    public Account(int accountNumber, String name, String password, double balance){
-        this.accountNumber = accountNumber;
+    public Account(String name, int accountNumber, double balance) {
         this.name = name;
-        this.password = password;
+        this.accountNumber = accountNumber;
         this.balance = balance;
     }
 
-    public void deposit(double amount){
-        if (amount > 0){
-            balance += amount;
-        }
+    public String getName() {
+        return name;
     }
-    
-    public boolean withdraw(double amount){
-        if (amount > 0 && balance >= amount ){
+
+    public int getAccountNumber() {
+        return accountNumber;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void deposit(double amount) {
+        balance += amount;
+    }
+
+    public boolean withdraw(double amount) {
+        if (amount <= balance) {
             balance -= amount;
             return true;
         }
         return false;
     }
 
-    public int getAccountNumber() {return accountNumber;}
-    public String getName() {return name;}
-    public String getPassword() {return password;}
-    public double getBalance() {return balance;}
-
-
-    public String toFileString() {
-        return accountNumber + "," + name + "," + password + "," + balance;
+    @Override
+    public String toString() {
+        return name + "," + accountNumber + "," + balance;
     }
-
-    public void printInfo() {
-        System.out.println("Account #" + accountNumber);
-        System.out.println("Name :" + name);
-        System.out.println("Balance: $" + balance);
-    }
-
-
-
 }
