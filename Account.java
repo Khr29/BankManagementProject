@@ -28,6 +28,7 @@ public class Account {
     public void deposit(double amount) {
         balance += amount;
     }
+    
 
     public boolean withdraw(double amount) {
         if (amount <= balance) {
