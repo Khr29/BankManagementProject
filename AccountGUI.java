@@ -27,10 +27,14 @@ public class AccountGUI extends JFrame {
         JButton addButton = new JButton("Add Account");
         JButton saveButton = new JButton("Save Accounts");
         JButton showButton = new JButton("Show All Accounts");
+        JButton depositButton = new JButton("Deposit");
+        JButton withdrawButton = new JButton("Withdraw");
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(addButton);
         buttonPanel.add(saveButton);
         buttonPanel.add(showButton);
+        buttonPanel.add(depositButton);
+        buttonPanel.add(withdrawButton);
         add(buttonPanel, BorderLayout.SOUTH);
 
         // Add a new account when button is clicked
@@ -70,6 +74,52 @@ public class AccountGUI extends JFrame {
                 }
             }
         });
+        // Deposit button action
+depositButton.addActionListener(new ActionListener() {
+    public void actionPerformed(ActionEvent e) {
+        String accNumStr = JOptionPane.showInputDialog("Enter account number:");
+        String amountStr = JOptionPane.showInputDialog("Enter deposit amount:");
+        try {
+            int accountNumber = Integer.parseInt(accNumStr);
+            double amount = Double.parseDouble(amountStr);
+            Account acc = manager.findAccount(accountNumber); // You'll need a findAccount method in AccountManager
+            if (acc != null) {
+                acc.deposit(amount);
+                JOptionPane.showMessageDialog(null, "Deposit successful!");
+            } else {
+                JOptionPane.showMessageDialog(null, "Account not found!");
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(null, "Invalid input!");
+        }
+    }
+});
+
+        // Withdraw button action
+        withdrawButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String accNumStr = JOptionPane.showInputDialog("Enter account number:");
+                String amountStr = JOptionPane.showInputDialog("Enter withdraw amount:");
+                try {
+                    int accountNumber = Integer.parseInt(accNumStr);
+                    double amount = Double.parseDouble(amountStr);
+                    Account acc = manager.findAccount(accountNumber); // Same here
+                    if (acc != null) {
+                        if (amount > acc.getBalance()) {
+                            JOptionPane.showMessageDialog(null, "Insufficient balance!");
+                        } else {
+                            acc.withdraw(amount);
+                            JOptionPane.showMessageDialog(null, "Withdrawal successful!");
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Account not found!");
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Invalid input!");
+                }
+            }
+        });
+        
     }
     //Program Entery Point
     public static void main(String[] args) {
