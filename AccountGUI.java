@@ -6,19 +6,20 @@ import java.awt.event.*;
 public class AccountGUI extends JFrame {
     private AccountManager manager;
     private JTextArea displayArea;
-    
-    public AccountGUI(){
-        //DATA SETUP
-        manager = new AccountManager();
-        manager.getAccounts().addAll(DataHandler.loadAccounts());
+    private final String MANAGER_PASSWORD = "admin123"; // manager password
 
-        //WINDOW SETUP
+    public AccountGUI() {
+        // DATA SETUP
+        manager = new AccountManager();
+        manager.getAccounts().addAll(DataHandlerSQL.loadAccounts());
+
+        // WINDOW SETUP
         setTitle("Bank Account Manager");
-        setSize(500,400);
+        setSize(500, 400);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        //MAIN DISPLAY AREA
+        // MAIN DISPLAY AREA
         displayArea = new JTextArea();
         displayArea.setEditable(false);
         add(new JScrollPane(displayArea), BorderLayout.CENTER);
@@ -27,8 +28,9 @@ public class AccountGUI extends JFrame {
         JButton addButton = new JButton("Add Account");
         JButton saveButton = new JButton("Save Accounts");
         JButton showButton = new JButton("Show All Accounts");
-        JButton depositButton = new JButton("Deposit");
+        JButton depositButton = new JButton("Deposit / Transfer");
         JButton withdrawButton = new JButton("Withdraw");
+
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(addButton);
         buttonPanel.add(saveButton);
@@ -37,91 +39,104 @@ public class AccountGUI extends JFrame {
         buttonPanel.add(withdrawButton);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Add a new account when button is clicked
-        addButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e){
-                String name = JOptionPane.showInputDialog("Enter name:");
-                String accNumStr = JOptionPane.showInputDialog("Enter account number:");
-                String balanceStr = JOptionPane.showInputDialog("Enter balance:");
-                if(name != null && accNumStr != null && balanceStr != null){
-                    try {
-                        int accountNumber = Integer.parseInt(accNumStr);
-                        double balance = Double.parseDouble(balanceStr);
-                        Account acc = new Account(name, accountNumber, balance);
-                        manager.addAccount(acc);
-                        JOptionPane.showMessageDialog(null,"Account added!");
-                    } catch(NumberFormatException ex){
-                        JOptionPane.showMessageDialog(null,"Invalid number format!");
-                    }
-                }
-            }
-        });
-
-        // Save the account when button is clicked
-        saveButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e){
-                DataHandler.saveAccounts(manager.getAccounts());
-                JOptionPane.showMessageDialog(null, "Accounts saved!");
-            }
-        });
-
-        // Show all account when button is clicked
-        showButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e){
-                displayArea.setText("");
-                for(Account acc : manager.getAccounts()){
-                    displayArea.append("Name:" + acc.getName() + ", Account:" + acc.getAccountNumber() + ", Balance:" + acc.getBalance() + "\n");
-                }
-            }
-        });
-        // Deposit button action
-depositButton.addActionListener(new ActionListener() {
-    public void actionPerformed(ActionEvent e) {
-        String accNumStr = JOptionPane.showInputDialog("Enter account number:");
-        String amountStr = JOptionPane.showInputDialog("Enter deposit amount:");
-        try {
-            int accountNumber = Integer.parseInt(accNumStr);
-            double amount = Double.parseDouble(amountStr);
-            Account acc = manager.findAccount(accountNumber); // You'll need a findAccount method in AccountManager
-            if (acc != null) {
-                acc.deposit(amount);
-                JOptionPane.showMessageDialog(null, "Deposit successful!");
-            } else {
-                JOptionPane.showMessageDialog(null, "Account not found!");
-            }
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(null, "Invalid input!");
-        }
-    }
-});
-
-        // Withdraw button action
-        withdrawButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String accNumStr = JOptionPane.showInputDialog("Enter account number:");
-                String amountStr = JOptionPane.showInputDialog("Enter withdraw amount:");
+        // Add a new account with password
+        addButton.addActionListener(e -> {
+            String name = JOptionPane.showInputDialog("Enter name:");
+            String accNumStr = JOptionPane.showInputDialog("Enter account number:");
+            String balanceStr = JOptionPane.showInputDialog("Enter balance:");
+            String password = JOptionPane.showInputDialog("Set account password:");
+            if (name != null && accNumStr != null && balanceStr != null && password != null) {
                 try {
                     int accountNumber = Integer.parseInt(accNumStr);
-                    double amount = Double.parseDouble(amountStr);
-                    Account acc = manager.findAccount(accountNumber); // Same here
-                    if (acc != null) {
-                        if (amount > acc.getBalance()) {
-                            JOptionPane.showMessageDialog(null, "Insufficient balance!");
-                        } else {
-                            acc.withdraw(amount);
-                            JOptionPane.showMessageDialog(null, "Withdrawal successful!");
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Account not found!");
-                    }
+                    double balance = Double.parseDouble(balanceStr);
+                    Account acc = new Account(name, accountNumber, balance, password);
+                    manager.addAccount(acc);
+                    JOptionPane.showMessageDialog(null, "Account added!");
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(null, "Invalid input!");
+                    JOptionPane.showMessageDialog(null, "Invalid number format!");
                 }
             }
         });
-        
+
+        // Save accounts
+        saveButton.addActionListener(e -> {
+            DataHandlerSQL.saveAccounts(manager.getAccounts());
+            JOptionPane.showMessageDialog(null, "Accounts saved!");
+        });
+
+        // Show all accounts (manager only)
+        showButton.addActionListener(e -> {
+            String inputPass = JOptionPane.showInputDialog("Enter manager password:");
+            if (MANAGER_PASSWORD.equals(inputPass)) {
+                manager.getAccounts().clear();
+                manager.getAccounts().addAll(DataHandlerSQL.loadAccounts());
+                StringBuilder sb = new StringBuilder();
+                for (Account acc : manager.getAccounts()) {
+                    sb.append("Name: ").append(acc.getName())
+                      .append(", Account: ").append(acc.getAccountNumber())
+                      .append(", Balance: ").append(acc.getBalance())
+                      .append("\n");
+                }
+                displayArea.setText(sb.toString());
+            } else {
+                JOptionPane.showMessageDialog(null, "Wrong manager password!");
+            }
+        });
+
+        // Deposit / Transfer
+        depositButton.addActionListener(e -> {
+            String fromAccStr = JOptionPane.showInputDialog("Enter your account number:");
+            String password = JOptionPane.showInputDialog("Enter your password:");
+            String amountStr = JOptionPane.showInputDialog("Enter amount to deposit or transfer:");
+            String toAccStr = JOptionPane.showInputDialog("Enter target account number (same as yours if deposit only):");
+
+            try {
+                int fromAccNum = Integer.parseInt(fromAccStr);
+                int toAccNum = Integer.parseInt(toAccStr);
+                double amount = Double.parseDouble(amountStr);
+
+                Account fromAcc = manager.findAccount(fromAccNum);
+                Account toAcc = manager.findAccount(toAccNum);
+
+                if (fromAcc != null && toAcc != null) {
+                    if (Account.transfer(fromAcc, toAcc, amount, password)) {
+                        JOptionPane.showMessageDialog(null, "Transaction successful!");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Wrong password or insufficient funds!");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Account not found!");
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Invalid input!");
+            }
+        });
+
+        // Withdraw with password
+        withdrawButton.addActionListener(e -> {
+            String accNumStr = JOptionPane.showInputDialog("Enter account number:");
+            String password = JOptionPane.showInputDialog("Enter your password:");
+            String amountStr = JOptionPane.showInputDialog("Enter withdraw amount:");
+            try {
+                int accountNumber = Integer.parseInt(accNumStr);
+                double amount = Double.parseDouble(amountStr);
+                Account acc = manager.findAccount(accountNumber);
+                if (acc != null) {
+                    if (acc.withdraw(amount, password)) {
+                        JOptionPane.showMessageDialog(null, "Withdrawal successful!");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Wrong password or insufficient balance!");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Account not found!");
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Invalid input!");
+            }
+        });
     }
-    //Program Entery Point
+
+    // Program Entry Point
     public static void main(String[] args) {
         new AccountGUI().setVisible(true);
     }

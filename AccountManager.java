@@ -9,7 +9,7 @@ public class AccountManager {
         accounts = new ArrayList<>();
     }
 
-    // add a new account
+    // add a new account (password handled in Account)
     public void addAccount(Account account) {
         accounts.add(account);
     }
